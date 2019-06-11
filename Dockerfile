@@ -263,7 +263,7 @@ RUN if test "${SPATIALITE_VERSION}" != ""; then ( \
     fi
 
 # Build GDAL
-ARG GDAL_VERSION=3.4.0
+ARG GDAL_VERSION=master
 ARG GDAL_RELEASE_DATE
 ARG GDAL_BUILD_IS_RELEASE
 RUN if test "${GDAL_VERSION}" = "master"; then \
@@ -299,7 +299,7 @@ RUN if test "${GDAL_VERSION}" = "master"; then \
     fi \
     && echo ${GDAL_EXTRA_ARGS} \
     && mkdir gdal \
-    && wget -q https://github.com/OSGeo/gdal/archive/${GDAL_VERSION}.tar.gz -O - \
+    && wget -q https://github.com/OSGeo/gdal/archive/v2.4.0.tar.gz -O - \
         | tar xz -C gdal --strip-components=1 \
     && cd gdal/gdal \
     && if test "${RSYNC_REMOTE}" != ""; then \
@@ -357,7 +357,7 @@ RUN if test "${GDAL_VERSION}" = "master"; then \
 
 # Build final image
 FROM alpine:latest as runner
-
+       
 RUN date
 
 ARG POPPLER=poppler
@@ -393,7 +393,30 @@ COPY --from=builder  /build/usr/share/gdal/ /usr/share/gdal/
 COPY --from=builder  /build/usr/include/ /usr/include/
 COPY --from=builder  /build_gdal_python/usr/ /usr/
 COPY --from=builder  /build_gdal_version_changing/usr/ /usr/
-
-RUN pip3 install psycopg2=2.7.7 redis=3.2.0 oss2=2.6.1  pyproj=1.9.6 rasterio=1.0.23
-
+RUN apk add --no-cache postgresql-dev python3-dev 
+RUN apk add --no-cache gcc  
+RUN apk add --no-cache musl-dev g++ 
+RUN pip3 install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple  numpy --upgrade
+RUN pip3 install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple redis pyproj rasterio psycopg2 oss2
 CMD ["/bin/sh"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
