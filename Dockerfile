@@ -395,9 +395,10 @@ COPY --from=builder  /build_gdal_python/usr/ /usr/
 COPY --from=builder  /build_gdal_version_changing/usr/ /usr/
 RUN apk add --no-cache postgresql-dev python3-dev 
 RUN apk add --no-cache gcc  
-RUN apk add --no-cache musl-dev g++ 
+RUN apk add --no-cache musl-dev g++ jpeg-dev zlib-dev
 RUN pip3 install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple  numpy --upgrade
-RUN pip3 install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple redis pyproj rasterio psycopg2 oss2
+RUN ENV LIBRARY_PATH=/lib:/usr/lib
+    && pip3 install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple redis pyproj rasterio psycopg2 oss2 pillow cogeotiff
 CMD ["/bin/sh"]
 
 
